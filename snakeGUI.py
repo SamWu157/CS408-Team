@@ -401,15 +401,20 @@ class Game:
 
             for i in range(0, len(rankList)):
 
-                sql = "SELECT name FROM score WHERE rank = '%d'" % (i + 1)
-                self.cursor.execute(sql)
-                name = self.cursor.fetchall()
-                sql = "SELECT score FROM score WHERE rank = '%d'" % (i + 1)
-                self.cursor.execute(sql)
-                score = self.cursor.fetchall()
+                if i < 10:
 
-                display = Label(self.frame2, text="%-10d%-10s%-10d" % (i + 1, name[0][0], score[0][0]), bg="black",fg="white")
-                display.pack()
+                    sql = "SELECT name FROM score WHERE rank = '%d'" % (i + 1)
+                    self.cursor.execute(sql)
+                    name = self.cursor.fetchall()
+                    sql = "SELECT score FROM score WHERE rank = '%d'" % (i + 1)
+                    self.cursor.execute(sql)
+                    score = self.cursor.fetchall()
+
+                    display = Label(self.frame2, text="%-10d%-10s%-10d" % (i + 1, name[0][0], score[0][0]), bg="black",fg="white")
+                    display.pack()
+
+                else:
+                    break
  
 
         # close database
@@ -469,13 +474,9 @@ class DB:
 
         ranking = sorted(rankingScore, key=lambda rankingScore: rankingScore[1])
 
-        print ranking
-
         reverse = len(rankingScore) - 1
 
         for i in range(0, len(ranking)):
-
-            print ranking[reverse][1]
 
             sql = "UPDATE score SET rank = '%d' WHERE id = '%d'" % (i + 1, ranking[reverse][0])
             self.cursor.execute(sql)
