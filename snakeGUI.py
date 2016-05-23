@@ -5,9 +5,6 @@ import random
 from Tkinter import *
 from tkFont import Font
 
-WIDTH = 495
-HEIGHT = 305
-
 class Game:
     def __init__(self):
 
@@ -25,7 +22,7 @@ class Game:
         self.scoreC = None
         self.score = 0
 
-        #
+        # horizontal
         self.hor = True
         
         # direction for how the snake will move
@@ -175,6 +172,7 @@ class Game:
                 if crd[0] < crd[2]:
                     crd[0] += 10
 
+            # change crd depending on y or x movement
             if direction == 'down':
                 crd[-1] += 10
             elif direction == 'up':
@@ -202,6 +200,7 @@ class Game:
             self.w.coords(1, *crd)
             self.w.delete(self.head)
 
+            # draws snake head
             if direction == 'down':
                 self.head = self.w.create_line(crd[-2], crd[-1], crd[-2], crd[-1] + 5, width=10, fill="white")
             elif direction == 'up':
@@ -231,6 +230,7 @@ class Game:
                     self.leftid = self.w.after(self.time, self.left, i)
 
             else:
+                # delete stuff
                 self.w.delete(1)
                 self.w.delete(self.head)
                 self.w.delete(self.food)
