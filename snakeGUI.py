@@ -3,6 +3,7 @@
 import MySQLdb
 import random
 from Tkinter import *
+from tkFont import Font
 
 WIDTH = 495
 HEIGHT = 305
@@ -13,115 +14,85 @@ class Game:
         # set up TKinter
         self.root = Tk()
 
-        # main window
+        # set up main windows
         self.frame1 = None
-
-        # score window
-        self.frame2 = None
-
-        # window
         self.w = None
+
+        # set up score windows
+        self.frame2 = None
         
-        # scores
+        # variables to hold the score
         self.scoreC = None
         self.score = 0
 
         #
         self.hor = True
         
-        # direction
+        # direction for how the snake will move
         self.upid = self.downid = self.rightid = self.leftid = 0
         
         # snake head
         self.head = -1
         
-        # speed
+        # snake speed
         self.time = 700
+
+        # set up database
+        self.DB_HOST = "localhost"
+        self.DB_USER = "cs408_user"
+        self.DB_PW = "cs408"
+        self.DB_DB = "game"
 
     # start page
     def home(self):
 
-        # set up main window
+        # frame1 create main windows size
         self.frame1 = Frame(self.root, width=750, height=350,bg="black")
         
-        # set up window
+        # set up windows
         self.root.wm_minsize(width=750, height=666)
         self.root.title("Snake")
         
-        # set background
+        # set background color
         self.root.configure(bg="black")
         
-        # set up window
+        # draw windows
         self.frame1.pack_propagate(0)
         self.frame1.update()
 
-        # start button
+        # start button so player can start the game
         start = Button(self.frame1, text="start", bg="black", command=lambda: self.callgame(100))
 
-        # show score button
+        # score button
         showScore = Button(self.frame1, text="Show Score", bg="black", command=lambda: self.showScore())
 
+        # display start button
         start.grid(row=0, columnspan=2)
+
+        # display score button
         showScore.grid(row=1, columnspan=2)
+
+        # set up header and display header
         self.H=Label(self.root, text="CS 408\nJimmy Cheng, Hung Lay, Samantha Wu", bg="black", fg="white", pady=10)
         self.H.pack()
+
+        # draw main window
         self.frame1.pack(expand=True)
+
+        # keep windows open
         self.root.mainloop()
 
-    def showScore(self):
-        # close start window
-        self.frame1.destroy()
-
-        # draw frame 2
-        self.frame2 = Frame(self.root, width=750, height=350, bg="black")
-
-        # display Score
-        self.displayScore()
-
-        # draw back button
-        self.back = Button(self.frame2, text="Back", bg="black", command=lambda: self.backToStart())
-        self.back.pack(side="bottom")
-
-        # draw reset button
-        self.resetScore = Button(self.frame2, text="Reset", bg="black", command=lambda: self.reset())
-        self.resetScore.pack(side="bottom")
-
-        self.frame2.pack(expand=True)
-
-    # reset database
-    def reset(self):
-
-        # reset database
-        resetDB()
-
-        # close score window
-        self.frame2.destroy()
-
-        # close header
-        self.H.destroy()
-
-        # call start window
-        self.home()
-
-    # back button
-    def backToStart(self):
-
-        # close score window
-        self.frame2.destroy()
-
-        # close header
-        self.H.destroy()
-
-        # call start window
-        self.home()
-
-    # start game    
+    # function to call to start the game 
     def callgame(self, time):
         # speed
         self.time = time
 
         # start game
         self.game()
+
+
+    # functions: calldown, callup, callright, callleft, player will use up, down, left, and right arrow keys
+    # to play the game.
 
     # down arrow
     def calldown(self, key):
@@ -154,23 +125,23 @@ class Game:
     # game
     def game(self):
 
-        # score
+        # initial score
         self.score = 0
 
-        # game window
+        # window's size
         self.w = Canvas(self.root, width=750, height=500, relief="flat", highlightbackground="white", highlightthickness=10)
 
         # close start window
         self.frame1.destroy()
 
-        # game window
+        # draw game window
         self.w.configure(background="black")
         self.w.pack(side="left")
 
-        # snake
+        # creates the initial location of the snake
         self.w.create_line(300, 250, 350, 250, width=10, fill="white")
 
-        # score text
+        # define a variable to show the score of player
         self.scoreC = Label(self.root, text="Score\n" + str(self.score), bg="black", fg="white")
         self.scoreC.pack(side="bottom")
 
@@ -270,48 +241,84 @@ class Game:
     def down(self, i):
         self.arrow('down', i)
 
+    # up arrow
     def up(self, i):
         self.arrow('up', i)
 
+    # right arrow
     def right(self, i):
         self.arrow('right', i)
 
+    # left arrow
     def left(self, i):
         self.arrow('left', i)
 
     def createFood(self):
-        # self.w.delete(self.food) #deleting old food.
+
         crd = self.w.coords(1)
         ext = []
         for i in crd:
             ext.append(i)
             for j in range(-50, 50):
                 ext.append(i + j)
+
+        # random location to create the food 
         randx = random.randrange(20, 730)
         randy = random.randrange(20, 480)
+
+        # check that the food is located in the game window
         while randx not in ext and randy not in ext:
             randx = random.randrange(20, 730)
             randy = random.randrange(20, 480)
+
+        # draw food
         self.food = self.w.create_line(randx, randy, randx + 12, randy, width=10, fill="white")
 
     def checkEaten(self):
+
+        # snake's head coordinates
         headcoords = self.w.coords(self.head)
+
+        # food coordinates
         foodcoords = self.w.coords(self.food)
+
+        # flag for if food is eaten
         flag = False
-        if int(headcoords[-4]) in range(int(foodcoords[-4]) - 7, int(foodcoords[-2]) + 7) and int(
-                headcoords[-3]) in range(int(foodcoords[-1]) - 10, int(foodcoords[-1] + 10)):
+
+        # check if head touches the food
+        if int(headcoords[-4]) in range(int(foodcoords[-4]) - 7, int(foodcoords[-2]) + 7) and int(headcoords[-3]) in range(int(foodcoords[-1]) - 10, int(foodcoords[-1] + 10)):
+
+            # set to true
             flag = True
+
+        # if food is eaten
         if flag:
+
+            # size of snake increases
             self.grow()
+
+            # add ten to score
             self.score += 10
+
+            # redraw score
             self.scoreC.configure(text="Score\n" + str(self.score), bg="black", fg="white")
+
+            # delete eaten food
             self.w.delete(self.food)
+
+            # increase speed
             if not self.time == 30:
                 self.time = self.time - 10
+
+            # create new food
             self.createFood()
 
+    # increase the size of snake
     def grow(self):
+
+        # get window coordinates
         crd = self.w.coords(1)
+
         if crd[0] != crd[2]:  # horizontal condition
             if crd[0] < crd[2]:
                 crd[0] -= 20
@@ -325,25 +332,38 @@ class Game:
                 crd[1] -= 20
             self.w.coords(1, *crd)
 
+    # end the game if the head of snake hits the border or itself
     def end(self):
+
+        # get window coordinates
         crd = self.w.coords(1)
-        h = self.w.coords(self.head)
+
+        # get head coordinates
+        head = self.w.coords(self.head)
         a = 0
+
+        # check if snake hit itself
         while a < len(crd) - 2:
             if crd[a] == crd[a + 2]:
-                if (h[0] == crd[a] and crd[a + 1] < h[1] < crd[a + 3]) or (
-                        h[0] == crd[a]  and crd[a + 1] > h[1] > crd[a + 3]):
+                if (head[0] == crd[a] and crd[a + 1] < head[1] < crd[a + 3]) or (
+                        head[0] == crd[a]  and crd[a + 1] > head[1] > crd[a + 3]):
                     return True
             else:
-                if (h[1] == crd[a + 1] and crd[a] < h[0] < crd[a + 2]) or (h[1] == crd[a + 1] and crd[a] > h[0] > crd[a + 2]):
+                if (head[1] == crd[a + 1] and crd[a] < head[0] < crd[a + 2]) or (head[1] == crd[a + 1] and crd[a] > head[0] > crd[a + 2]):
                     return True
             a += 2
-        if (h[0] == 0 and 0 < h[1] < 500) or (h[1] == 0 and 0 < h[0] < 750) or (h[1] == 510 and 0 < h[0] < 750) or (h[0] == 760 and 0<h[1]<500):
+
+        # check if snake hits borders
+        if (head[0] == 0 and 0 < head[1] < 500) or (head[1] == 0 and 0 < head[0] < 750) or (head[1] == 510 and 0 < head[0] < 750) or (head[0] == 760 and 0 < head[1] < 500):
+
             return True
+
+        # snake is still alive
         return False
 
     def callhome(self):
 
+        # close game window, close restart button, close header, close score
         self.w.destroy()
         self.restart.destroy()
         self.H.destroy()
@@ -352,27 +372,94 @@ class Game:
         # ask for name
         self.input = Label(self.root, text="Name (3 CHAR ONLY)", bg = "black", fg = "white")
         self.input.pack( side = LEFT)
+
+        # create input box
         self.entry = Entry(self.root, bd =5)
         self.entry.pack(side = LEFT)
+
+        # submit button
         self.submit = Button(self.root, text="submit", bg="black", command=lambda: self.store(self.entry.get().strip()))
         self.submit.pack(side = RIGHT)
 
     def store(self, name):
-        DB(name, self.score)
 
+        # close input prompt, close input box, close submit button
         self.input.destroy()
         self.entry.destroy()
         self.submit.destroy()
 
+        # store name in database
+        DB(name, self.score)
+
+        # call start screen
+        self.home()
+
+    # display Score
+    def showScore(self):
+        # close start window
+        self.frame1.destroy()
+
+        # set up score window
+        self.frame2 = Frame(self.root, width=750, height=350, bg="black")
+
+        # display Scores
+        self.displayScore()
+
+        # draw back button
+        self.back = Button(self.frame2, text="Back", bg="black", command=lambda: self.backToStart())
+        self.back.pack(side="bottom")
+
+        # draw reset button
+        self.resetScore = Button(self.frame2, text="Reset", bg="black", command=lambda: self.reset())
+        self.resetScore.pack(side="bottom")
+
+        # draw score window
+        self.frame2.pack(expand=True)
+
+    # reset database
+    def reset(self):
+
+        # Open databse connection
+        self.db = MySQLdb.connect(self.DB_HOST, self.DB_USER, self.DB_PW, self.DB_DB)
+
+        # prepare cursor object
+        self.cursor = self.db.cursor()
+
+        # delete table
+        self.cursor.execute("DROP TABLE IF EXISTS score")
+
+        # add empty table
+        sql = "CREATE TABLE score (rank int, name VARCHAR(3), score int, id int NOT NULL AUTO_INCREMENT PRIMARY KEY)"
+        self.cursor.execute(sql)
+
+        # commit to database
+        self.db.commit()
+
+        # disconnect from server
+        self.db.close()
+
+        # close score window
+        self.frame2.destroy()
+
+        # close header
+        self.H.destroy()
+
+        # call start window
+        self.home()
+
+    # back button
+    def backToStart(self):
+
+        # close score window
+        self.frame2.destroy()
+
+        # close header
+        self.H.destroy()
+
+        # call start window
         self.home()
 
     def displayScore(self):
-
-        # set up database
-        self.DB_HOST = "localhost"
-        self.DB_USER = "cs408_user"
-        self.DB_PW = "cs408"
-        self.DB_DB = "game"
 
         # Open databse connection
         self.db = MySQLdb.connect(self.DB_HOST, self.DB_USER, self.DB_PW, self.DB_DB)
@@ -385,32 +472,46 @@ class Game:
         self.cursor.execute(sql)
         rank = self.cursor.fetchall()
         
+        # convert rank to list
         rankList = []
         for i in rank:
             rankList.append(i[0])
 
+        # sort ranks
         rankList = sorted(rankList)
 
-        # print
+        # display scores by rank
         if not rankList:
+
+            # no values in database
             label = Label(self.frame2, text="No Scores Available", bg="black", fg="white") 
             label.pack()
+
         else:
-            header = Label(self.frame2, text="%-10s%-10s%-10s\n" % ("RANK", "NAME", "SCORE"), bg="black", fg="white")
+
+            fonts = Font(family='Courier New', size = 16)
+
+            # create database header
+            header = Label(self.frame2, text="%-10s%-10s%-10s\n" % ("RANK", "NAME", "SCORE"), font = fonts, bg="black", fg="white")
             header.pack()
 
+            # rotate through list of scores
             for i in range(0, len(rankList)):
 
+                # display only top ten scores
                 if i < 10:
 
+                    # get name from database
                     sql = "SELECT name FROM score WHERE rank = '%d'" % (i + 1)
                     self.cursor.execute(sql)
                     name = self.cursor.fetchall()
+                    # get score from database
                     sql = "SELECT score FROM score WHERE rank = '%d'" % (i + 1)
                     self.cursor.execute(sql)
                     score = self.cursor.fetchall()
 
-                    display = Label(self.frame2, text="%-10d%-10s%-10d" % (i + 1, name[0][0], score[0][0]), bg="black",fg="white")
+                    # display rank, name, and score
+                    display = Label(self.frame2, text="%-10d%-10s%-10d" % (i + 1, name[0][0], score[0][0]), font = fonts, bg="black",fg="white")
                     display.pack()
 
                 else:
@@ -424,6 +525,7 @@ class Game:
 class DB:
 
     def __init__(self, name, score):
+
         # set up values
         self.DB_HOST = "localhost"
         self.DB_USER = "cs408_user"
@@ -437,7 +539,7 @@ class DB:
         self.cursor = self.db.cursor()
 
         # store score
-        self.name = name
+        self.name = name.upper()
         self.score = score
         self.addScore()
 
@@ -487,6 +589,7 @@ class DB:
         self.db.commit()
 
     def addScore(self):
+
         # store new score
         sql = "INSERT INTO score (rank, name, score) VALUES (0, '%s', '%d')" % (self.name, self.score)
         self.cursor.execute(sql)
@@ -494,40 +597,6 @@ class DB:
         # sort database
         self.sort()
 
-class resetDB:
-    def __init__(self):
-        # set up values
-        self.DB_HOST = "localhost"
-        self.DB_USER = "cs408_user"
-        self.DB_PW = "cs408"
-        self.DB_DB = "game"
-
-        # Open databse connection
-        self.db = MySQLdb.connect(self.DB_HOST, self.DB_USER, self.DB_PW, self.DB_DB)
-
-        # prepare cursor object
-        self.cursor = self.db.cursor()
-
-        # resetScore
-        self.resetScore()
-
-        # commit to database
-        self.db.commit()
-
-        # disconnect from server
-        self.db.close()
-
-    def resetScore(self):
-
-        # delete table
-        self.cursor.execute("DROP TABLE IF EXISTS score")
-
-        # add empty table
-        sql = "CREATE TABLE score (rank int, name VARCHAR(3), score int, id int NOT NULL AUTO_INCREMENT PRIMARY KEY)"
-        self.cursor.execute(sql)
-
-        # commit to database
-        self.db.commit()
-
+# start game
 g = Game()
 g.home()
