@@ -210,16 +210,23 @@ class Game:
             elif direction == 'left':
                 self.head = self.w.create_line(crd[-2], crd[-1], crd[-2] - 5, crd[-1], width=10, fill="white")
 
+            # check if game ends
             end = self.end()
+
+            # check if food is eaten
             self.checkEaten()
+
             i += 1
+
             if direction == 'down' or direction == 'up':
                 self.hor = False
             else:
                 self.hor = True
 
+            # if game continues
             if not end:
 
+                # set directon
                 if direction == 'down':
                     self.downid = self.w.after(self.time, self.down, i)
                 elif direction == 'up':
@@ -229,6 +236,7 @@ class Game:
                 elif direction == 'left':
                     self.leftid = self.w.after(self.time, self.left, i)
 
+            # else game ends
             else:
                 # delete stuff
                 self.w.delete(1)
@@ -574,12 +582,14 @@ class DB:
         # map score to id
         rankingScore = zip(idList, scoreList)
 
+        # sort rankingScore in ascending order
         ranking = sorted(rankingScore, key=lambda rankingScore: rankingScore[1])
 
         reverse = len(rankingScore) - 1
 
         for i in range(0, len(ranking)):
 
+            # set ranks of score
             sql = "UPDATE score SET rank = '%d' WHERE id = '%d'" % (i + 1, ranking[reverse][0])
             self.cursor.execute(sql)
 
