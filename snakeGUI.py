@@ -6,6 +6,8 @@ from Tkinter import *
 from tkFont import Font
 
 class Game:
+
+    # constructor
     def __init__(self):
 
         # set up TKinter
@@ -294,7 +296,8 @@ class Game:
         flag = False
 
         # check if head touches the food
-        if int(headcoords[-4]) in range(int(foodcoords[-4]) - 7, int(foodcoords[-2]) + 7) and int(headcoords[-3]) in range(int(foodcoords[-1]) - 10, int(foodcoords[-1] + 10)):
+        if int(headcoords[-4]) in range(int(foodcoords[-4]) - 7, int(foodcoords[-2]) + 7
+            ) and int(headcoords[-3]) in range(int(foodcoords[-1]) - 10, int(foodcoords[-1] + 10)):
 
             # set to true
             flag = True
@@ -362,7 +365,8 @@ class Game:
             a += 2
 
         # check if snake hits borders
-        if (head[0] == 0 and 0 < head[1] < 500) or (head[1] == 0 and 0 < head[0] < 750) or (head[1] == 510 and 0 < head[0] < 750) or (head[0] == 760 and 0 < head[1] < 500):
+        if (head[0] == 0 and 0 < head[1] < 500) or (head[1] == 0 and 0 < head[0] < 750) or (
+            head[1] == 510 and 0 < head[0] < 750) or (head[0] == 760 and 0 < head[1] < 500):
 
             return True
 
