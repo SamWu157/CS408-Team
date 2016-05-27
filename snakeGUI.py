@@ -60,10 +60,10 @@ class Game:
         self.frame1.update()
 
         # start button so player can start the game
-        start = Button(self.frame1, text="start", bg="black", command=lambda: self.callgame(100))
+        start = Button(self.frame1, text="start", highlightbackground="black", command=lambda: self.callgame(100))
 
         # score button
-        showScore = Button(self.frame1, text="Show Score", bg="black", command=lambda: self.showScore())
+        showScore = Button(self.frame1, text="Show Score", highlightbackground="black", command=lambda: self.showScore())
 
         # display start button
         start.grid(row=0, columnspan=2)
@@ -244,7 +244,7 @@ class Game:
                 self.w.delete(1)
                 self.w.delete(self.head)
                 self.w.delete(self.food)
-                self.restart = Button(self.root, text="Restart", command=lambda: self.callhome())
+                self.restart = Button(self.root, highlightbackground="black", text="Restart", command=lambda: self.callhome())
                 self.restart.pack(side="bottom")
 
     # down arrow
@@ -382,16 +382,16 @@ class Game:
         self.scoreC.destroy()
 
         # ask for name
-        self.input = Label(self.root, text="Name (3 CHAR ONLY)", bg = "black", fg = "white")
-        self.input.pack( side = LEFT)
+        self.input = Label(self.root, text="Name (3 CHAR ONLY)", bg = "black", fg = "white", padx = 10)
+        self.input.pack(side = LEFT)
 
         # create input box
-        self.entry = Entry(self.root, bd =5)
+        self.entry = Entry(self.root)
         self.entry.pack(side = LEFT)
 
         # submit button
-        self.submit = Button(self.root, text="submit", bg="black", command=lambda: self.store(self.entry.get().strip()))
-        self.submit.pack(side = RIGHT)
+        self.submit = Button(self.root, text="submit", highlightbackground="black", command=lambda: self.store(self.entry.get().strip()))
+        self.submit.pack(side = LEFT)
 
     def store(self, name):
 
@@ -408,6 +408,7 @@ class Game:
 
     # display Score
     def showScore(self):
+        
         # close start window
         self.frame1.destroy()
 
@@ -418,11 +419,11 @@ class Game:
         self.displayScore()
 
         # draw back button
-        self.back = Button(self.frame2, text="Back", bg="black", command=lambda: self.backToStart())
+        self.back = Button(self.frame2, text="Back", highlightbackground="black", command=lambda: self.backToStart())
         self.back.pack(side="bottom")
 
         # draw reset button
-        self.resetScore = Button(self.frame2, text="Reset", bg="black", command=lambda: self.reset())
+        self.resetScore = Button(self.frame2, text="Reset", highlightbackground="black", command=lambda: self.reset())
         self.resetScore.pack(side="bottom")
 
         # draw score window
